@@ -155,7 +155,7 @@ ScriptsOnlyBuild:
     className: TMP_Dropdown
   - hash:
       serializedVersion: 2
-      Hash: f29bbc214800eef3cd6c5c9987c82b62
+      Hash: ccc5027e8af711fb2492d6925079478a
     assemblyName: Assembly-CSharp.dll
     namespaceName: Chat
     className: ChatScripts
@@ -571,4 +571,4 @@ ScriptsOnlyBuild:
   scenePathNames:
   - Assets/Scenes/LoginChat.unity
   - Assets/Scenes/ChatScenes.unity
-  playerPath: G:/GI455/Build/GI455_Assignment_Week2.exe
+  playerPath: G:/GI455/Build/AssasignMentWeek4/GI455_Assignment_Week2.exe

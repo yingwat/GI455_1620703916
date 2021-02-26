@@ -190,7 +190,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Login
+  m_Text: Connect
 --- !u!222 &25366881
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -465,7 +465,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &798423666
 RectTransform:
   m_ObjectHideFlags: 0
@@ -694,9 +694,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad4c7ef752e1e4342a3e35ee6bb1228b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IPaddress: {fileID: 1179987866}
-  Port: {fileID: 798423667}
-  UserName: {fileID: 1727987808}
 --- !u!4 &847166854
 Transform:
   m_ObjectHideFlags: 0
@@ -886,7 +883,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1179987865
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1044,7 +1041,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.710022, y: -218.20297}
+  m_AnchoredPosition: {x: 0.710022, y: -66}
   m_SizeDelta: {x: 198.97949, y: 46.406296}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1273275433

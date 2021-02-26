@@ -21,27 +21,41 @@ namespace Chat
                 this.data = data;
             }
         }
-        
-        private WebSocket websocket;
 
-        public delegate void DelegateHandle(SocketEvent result);
-        public DelegateHandle OnCreateRoom;
-        public DelegateHandle OnJoinRoom;
-        public DelegateHandle OnLeaveRoom;
+        private WebSocket websocket;
         
-        public Button ButtonCreateRoom;
-        public Button ButtonJoinRoom;
-        public Button createRoom;
         public InputField InputCreateNameRoom;
-        //public string TextCreateNameRoom;
-        public InputField InputJoinNameRoom;
-        //public string TextJoinNameRoom;
-        public Button joinRoom;
-        public Text RoomName;
-        private string roomname;
-        public Button LeaveRoomButtpn;
-        public Text DebugErroText;
+
         
+        public InputField InputJoinNameRoom;
+        
+        public Text RoomName;
+
+        private string roomName;
+        private string temp;
+
+        public Button LeaveRoomButton;
+        public Text DebugErroText;
+
+        public InputField InputUserID;
+        public InputField InputPassword;
+
+        public InputField InputCreateUserID;
+        public InputField InputCreatePassword;
+        public InputField InputCreateRePassword;
+        public InputField InputCreateName;
+
+
+        public GameObject CreateRoomScenes;
+        public GameObject LoginScense;
+        public GameObject RegisterScence;
+        public GameObject JoinRoomScenes;
+        public GameObject ChatScence;
+        public GameObject LobbyScence;
+
+        public Text Username;
+        public string Outname;
+
         public InputField InputMessage;
         public Text SendMessage;
         public Text ReadMessage;
@@ -49,91 +63,106 @@ namespace Chat
         private string TextMessage;
         private string ListChat;
         private string ListText;
-        private string username = LoginChat.username;
-        private string ipaddress = LoginChat.ipaddress;
-        private string port = LoginChat.port;
-        private DateTime time = DateTime.Now;
+        //private DateTime time = DateTime.Now;
 
         void Start()
         {
-            websocket = new WebSocket("ws://"+ ipaddress + ":" + port +"/");
+            //var url = "127.0.0.1:5500";
+            var url = "127.0.0.1:41234";
+            //var url = "gi455-305013.an.r.appspot.com";
+            websocket = new WebSocket("ws://" + url + "/");
 
             websocket.OnMessage += OnMessage;
-            
+
             websocket.Connect();
+
+            LoginScense.gameObject.SetActive(true);
         }
-        
+
         public void OpenCreateRoom()
         {
-            createRoom.gameObject.SetActive(true);
-            InputCreateNameRoom.gameObject.SetActive(true);
-            ButtonCreateRoom.gameObject.SetActive(false);
-            ButtonJoinRoom.gameObject.SetActive(false);
+            CreateRoomScenes.gameObject.SetActive(true);
+            LobbyScence.gameObject.SetActive(false);
         }
-        
+
         public void OpenJoinRoom()
         {
-            joinRoom.gameObject.SetActive(true);
-            InputJoinNameRoom.gameObject.SetActive(true);
-            ButtonCreateRoom.gameObject.SetActive(false);
-            ButtonJoinRoom.gameObject.SetActive(false);
+            JoinRoomScenes.gameObject.SetActive(true);
+            LobbyScence.gameObject.SetActive(false);
+        }
+
+        public void LoginLobby()
+        {
+            var userid = InputUserID.text;
+            var password = InputPassword.text;
+            
+            if (userid == "" || password == "") 
+            {
+                DebugErroText.text = "Please input all field";
+            }
+            else
+            {
+                SocketEvent socketEvent = new SocketEvent("Login", userid + "#" + password);
+                               
+                string toJsonStr = JsonUtility.ToJson(socketEvent);
+
+                websocket.Send(toJsonStr);
+            }
+        }
+
+        public void GotoRegister()
+        {
+            LoginScense.gameObject.SetActive(false);
+            RegisterScence.gameObject.SetActive(true);
+        }
+
+        public void RegisterUser()
+        {
+            var userid = InputCreateUserID.text;
+            var password = InputCreatePassword.text;
+            var repassword = InputCreateRePassword.text;
+            var name = InputCreateName.text;
+
+            if (userid == "" || password == "" || name == "" || repassword == "")
+            {
+                DebugErroText.text = "Please input all field";
+            }
+            else if (password != repassword)
+            {
+                DebugErroText.text = "Passwords do not match ";
+            }
+            else if (password == repassword)
+            {
+                SocketEvent socketEvent = new SocketEvent("Register", userid + "#" + password + "#" + name);
+
+                string toJsonStr = JsonUtility.ToJson(socketEvent);
+
+                websocket.Send(toJsonStr);
+            }
         }
 
         public void CreateRoom(string roomName)
         {
             roomName = InputCreateNameRoom.text;
-            
+          
             SocketEvent socketEvent = new SocketEvent("CreateRoom", roomName);
-                
-            string toJsonStr = JsonUtility.ToJson(socketEvent);
-                
-            websocket.Send(toJsonStr);
-                            
-            CheckSendMessage(socketEvent);
 
-            /*if (roomName == roomname)
-            {
-                SocketEvent socketEvent = new SocketEvent("CreateRoom", roomName);
-                
-                string toJsonStr = JsonUtility.ToJson(socketEvent);
-                
-                websocket.Send(toJsonStr);
-                            
-                CheckSendMessage(socketEvent);
-            }
-            else
-            {
-                DebugErroText.gameObject.SetActive(true);
-                DebugErroText.text = ("Duplicate name");
-            }*/
+            string toJsonStr = JsonUtility.ToJson(socketEvent);
+
+            websocket.Send(toJsonStr);
+            
         }
+
 
         public void JoinRoom(string roomName)
         {
-            
             roomName = InputJoinNameRoom.text;
             
             SocketEvent socketEvent = new SocketEvent("JoinRoom", roomName);
-                                                                              
-            string toJsonStr = JsonUtility.ToJson(socketEvent);
-                                                                              
-            websocket.Send(toJsonStr);
-            CheckSendMessage(socketEvent);
 
-            /*if (roomName == roomname)
-            {
-                SocketEvent socketEvent = new SocketEvent("JoinRoom", roomName);
-                                                                              
-                string toJsonStr = JsonUtility.ToJson(socketEvent);
-                                                                              
-                websocket.Send(toJsonStr);
-                CheckSendMessage(socketEvent);
-            }
-            else
-            {
-                DebugErroText.gameObject.SetActive(true);
-                DebugErroText.text = ("Not found ");
-            }*/
+            string toJsonStr = JsonUtility.ToJson(socketEvent);
+
+            websocket.Send(toJsonStr);
         }
 
         public void LeaveRoom()
@@ -144,76 +173,69 @@ namespace Chat
 
             websocket.Send(toJsonStr);
             
-            ButtonCreateRoom.gameObject.SetActive(true);
-            ButtonJoinRoom.gameObject.SetActive(true);
-            
-            SendMessage.gameObject.SetActive(false);
-            ReadMessage.gameObject.SetActive(false);
-            InputMessage.gameObject.SetActive(false);
-            SendButton.gameObject.SetActive(false);
-            LeaveRoomButtpn.gameObject.SetActive(false);
-            RoomName.gameObject.SetActive(false);
         }
-        
-        public void CheckSendMessage(SocketEvent rname)
+
+        public void CheckSendMessage()
         {
-            RoomName.text = rname.data;
-            RoomName.gameObject.SetActive(true);
-            
-            joinRoom.gameObject.SetActive(false);
-            InputJoinNameRoom.gameObject.SetActive(false);
-            ButtonCreateRoom.gameObject.SetActive(false);
-            ButtonJoinRoom.gameObject.SetActive(false);
-            createRoom.gameObject.SetActive(false);
-            InputCreateNameRoom.gameObject.SetActive(false);
-            
-            SendMessage.gameObject.SetActive(true);
-            ReadMessage.gameObject.SetActive(true);
-            InputMessage.gameObject.SetActive(true);
-            SendButton.gameObject.SetActive(true);
-            LeaveRoomButtpn.gameObject.SetActive(true);
-            
-            
-            /*TextMessage = InputMessage.text;
+            //RoomName.text = rname.data;
 
-            RoomName = roomName.text;
+            LobbyScence.gameObject.SetActive(false);
+            CreateRoomScenes.gameObject.SetActive(false);
+            JoinRoomScenes.gameObject.SetActive(false);
             
-            ListChat  = username + ":" + TextMessage + "<size=16> ( " + time.ToString("HH:mm")+ " ) </size> " + "\n";
+            ChatScence.gameObject.SetActive(true);
+            LeaveRoomButton.gameObject.SetActive(true);
 
-            websocket.Send(ListChat);*/
+            TextMessage = InputMessage.text;
+            
+            ListChat  = Outname + ":" + TextMessage;
+            
+            Debug.Log(Outname + TextMessage + "\n");
+            
+            SocketEvent sendchat = new SocketEvent("SendMessage", ListChat);
+            
+            string toJsonStr = JsonUtility.ToJson(sendchat);
+            
+            websocket.Send(toJsonStr);
+            
         }
-        
+
         void Update()
         {
             UpdateNotifyMessage();
             
-            /*
             if (ListText != null)
             {
                 updatMessage();
-            }*/
+            }
         }
 
-        /*void updatMessage()
+        void updatMessage()
         {
-            string[] temp = ListText.Split(':');
+            string[] tempp = ListText.Split(':');
             
-            if (temp[0] == username)
+            if (tempp[0] == Outname)
             {
-                foreach (var i in ListText)
+                SendMessage.text += ListText + "\n";
+                SendMessage.text += "\n";
+                /*foreach (var i in ListText)
                 {
                     SendMessage.text += i ;
-                }
+                    ReadMessage.text += "\n" ;
+                }*/
             }
             else
             {
-                foreach (var i in ListText)
+                ReadMessage.text += "\n";
+                ReadMessage.text += ListText + "\n";
+                /*foreach (var i in ListText)
                 {
-                    ReadMessage.text += i ;
-                }
+                    SendMessage.text += "\n" ;
+                    ReadMessage.text +=  i ;
+                }*/
             }
             ListText = null;
-        }*/
+        }
 
         private void OnDestroy()
         {
@@ -222,38 +244,64 @@ namespace Chat
                 websocket.Close();
             }
         }
-        
+
         private void UpdateNotifyMessage()
         {
-            if (string.IsNullOrEmpty(roomname) == false)
+            if (string.IsNullOrEmpty(temp) == false)
             {
-                SocketEvent receiveMessageData = JsonUtility.FromJson<SocketEvent>(roomname);
+                SocketEvent receiveMessageData = JsonUtility.FromJson<SocketEvent>(temp);
 
                 if (receiveMessageData.eventName == "CreateRoom")
                 {
-                    if (OnCreateRoom != null)
-                        OnCreateRoom(receiveMessageData);
+                    ChatScence.SetActive(true);
+                    CreateRoomScenes.SetActive(false);
+                    LeaveRoomButton.gameObject.SetActive(true);
+
+                    roomName = receiveMessageData.data;
+                    RoomName.text = roomName;
                 }
                 else if (receiveMessageData.eventName == "JoinRoom")
                 {
-                    if (OnJoinRoom != null)
-                        OnJoinRoom(receiveMessageData);
+                    ChatScence.SetActive(true);
+                    JoinRoomScenes.SetActive(false);
+                    LeaveRoomButton.gameObject.SetActive(true);
+                    
+                    roomName = receiveMessageData.data;
+                    RoomName.text = roomName;
                 }
-                else if(receiveMessageData.eventName == "LeaveRoom")
+                else if (receiveMessageData.eventName == "LeaveRoom")
                 {
-                    if (OnLeaveRoom != null)
-                        OnLeaveRoom(receiveMessageData);
+                    ChatScence.SetActive(false);
+                    LobbyScence.SetActive(true);
                 }
-                roomname = "";
+                else if (receiveMessageData.eventName == "Login")
+                {
+                    LobbyScence.SetActive(true);
+                    LoginScense.SetActive(false);
+                    DebugErroText.text = " ";
+                    
+                    Outname = receiveMessageData.data;
+                    Username.text = Outname;
+                }
+                else if (receiveMessageData.eventName == "Register")
+                {
+                    RegisterScence.gameObject.SetActive(false);
+                    LoginScense.SetActive(true);
+                    DebugErroText.text = " ";
+                }
+                else if (receiveMessageData.eventName == "SendMessage")
+                {
+                    ListText = receiveMessageData.data;
+                }
+                temp = "";
             }
         }
 
+
         public void OnMessage(object sender, MessageEventArgs messageEventArgs)
         {
-            Debug.Log(messageEventArgs.Data);
-            //ListText = messageEventArgs.Data;
-            roomname = messageEventArgs.Data;
+            temp = messageEventArgs.Data;
+            Debug.Log(temp);
         }
     }
-    
 }
